@@ -30,7 +30,7 @@ def homepage():
 
     ## TODO 2.3 - sort the results by timestamp (most recent first)
     #
-    # your code here (remove the comments)
+    query.order = ['-timestamp']
     #
     ## YOUR CODE ENDS HERE ####
 
@@ -73,7 +73,16 @@ def upload_photo():
 
     ## TODO 2.1 - Call vision api for labelling
     #
-    # your code here (remove the comments)
+    response = vision_client.label_detection(image)
+    for label in response.label_annotations:
+        if first_probability < label.score:
+            second_probability = first_probability
+            second_label = first_label
+            first_probability = label.score
+            first_label = label.description
+        elif label.score > second_probability and label.score < first_probability:
+            second_probability = label.score
+            second_label = label.description
     #
     ## YOUR CODE ENDS HERE ####
 
@@ -86,7 +95,10 @@ def upload_photo():
 
     ## TODO 2.2 - Call safe search api 
     #
-    # your code here (remove the comments)
+    response = vision_client.safe_search_detection(image)
+    safe_search = response.safe_search_annotation
+    list = [response.safe_search_annotation.adult, response.safe_search_annotation.spoof, response.safe_search_annotation.medical,     response.safe_search_annotation.violence, response.safe_search_annotation.racy]max(list)
+    is_unsafe = likelihood_name[max(list)]
     #
     ## YOUR CODE ENDS HERE ####
 
